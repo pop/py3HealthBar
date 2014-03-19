@@ -2,7 +2,7 @@
 #v 0.1 Currently displays an additional '#' for every five minutes i3status has been running.
 
 from time import time
-
+import subprocess
 
 TIME = time()   #Gets time at startup
 TIMEOUT = 1     #Sets cache dump timeout to 1 second
@@ -11,26 +11,31 @@ TIMEOUT = 1     #Sets cache dump timeout to 1 second
 class Py3status:
 
     def test(self, i3status_output_json, i3status_config):
-        l_time = time()     #Gets new time
-        delta = l_time - TIME   # Calculates delta since startup time
-        delta = int(delta)  #Sets delta time to int
-        
-        var = "" #Var is waht's getting passed to i3status eventually
+	l_time = time()     #Gets new time
+	delta = l_time - TIME   # Calculates delta since startup time
+	delta = int(delta)  #Sets delta time to int
 
-        x = delta/300 #x is the number of 5 minute increments that have passed since the bar began.
-        for i in range (0,x): #This increments through the x times and adds a # for every 5minute increment that has passed
-            var += str("#") #Actual assignment of var
+	var = "" #Var is waht's getting passed to i3status eventually
 
-        condition = (x < 4) # tells i3status which color to use (good or bad)
+	x = delta/300 #x is the number of 5 minute increments that have passed since the bar began.
+	for i in range (0,x): #This increments through the x times and adds a # for every 5minute increment that has passed
+	    var += str("#") #Actual assignment of var
 
-        status = '{}'.format(var) #formats output for py3status
+	condition = (x < 4) # tells i3status which color to use (good or bad)
 
-        response = {'name': 'healthbar', 'full_text': status}   #This line is magic
-        response['cached_until'] = TIMEOUT  # sets cache timeout to TIMEOUT 
+	status = '{}'.format(var) #formats output for py3status
 
-        if condition:
-            response['color'] = i3status_config['color_good']
-        else:
-           response['color'] = i3status_config['color_bad']
+	response = {'name': 'healthbar', 'full_text': status}   #This line is magic
+	response['cached_until'] = TIMEOUT  # sets cache timeout to TIMEOUT 
 
-        return (0, response)    # returns values to be printed on the bar
+	if condition:
+	    response['color'] = i3status_config['color_good']
+	else:
+	    response['color'] = i3status_config['color_bad']
+
+	if (len(var)>12):  #This resets the bar after an hour
+	    subprocess.call('i3lock')	
+	    var = ""
+
+	return (0, response)    # returns values to be printed on the bar
+
