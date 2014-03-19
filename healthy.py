@@ -17,13 +17,20 @@ class Py3status:
         
         var = "" #Var is waht's getting passed to i3status eventually
 
-        x = delta/600 #x is the number of 5 minute increments that have passed since the bar began.
+        x = delta/300 #x is the number of 5 minute increments that have passed since the bar began.
         for i in range (0,x): #This increments through the x times and adds a # for every 5minute increment that has passed
             var += str("#") #Actual assignment of var
-            
+
+        condition = (x < 4) # tells i3status which color to use (good or bad)
+
         status = '{}'.format(var) #formats output for py3status
 
         response = {'name': 'healthbar', 'full_text': status}   #This line is magic
         response['cached_until'] = TIMEOUT  # sets cache timeout to TIMEOUT 
+
+        if condition:
+            response['color'] = i3status_config['color_good']
+        else:
+           response['color'] = i3status_config['color_bad']
 
         return (0, response)    # returns values to be printed on the bar
