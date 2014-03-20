@@ -1,14 +1,21 @@
-# v0.3 Displays 1 Hash Mark for every five minute increment you have been logged in.
+# v0.4 Displays 1 Hash Mark for every five minute increment you have been logged in.
 # Resets after you have logged in.
-# All values are static
+# All values are static, but can be edited at the top of the file
 # Written by Elijah Voigt and Lucy Wyman
 
 from time import time
 import subprocess
+import os
 
-global time 
+os.system('killall i3lock')
+
 time_t = time()
-TIMEOUT = 1
+TIMEOUT = 300 
+HEALTHY_INCREMENTS = 3
+LIMIT = 12 
+COLORS = True
+SYMBOL = "#"
+LOCK = "i3lock"
 
 class Py3status:
 
@@ -17,29 +24,35 @@ class Py3status:
         delta = l_time - time_t
         delta = int(delta)
 
-        var = "#"
+        var = SYMBOL 
 
-        x = delta/300
+        x = delta/TIMEOUT
         x = int(x)
         for i in range (0,x):
-            var += str("#")
+            var += str(SYMBOL)
 
-        condition = (x < 4)
+        condition = (x < (HEALTHY_INCREMENTS))
 
         status = '{}'.format(var)
 
         response = {'name': 'healthbar', 'full_text': status}
         response['cached_until'] = TIMEOUT 
 
-        if condition:
-            response['color'] = i3status_config['color_good']
-        else:
-            response['color'] = i3status_config['color_bad']
+        if COLORS:
+            if condition:
+                response['color'] = i3status_config['color_good']
+            else:
+                response['color'] = i3status_config['color_bad']
 
-        if (len(var)> 12):
+        #if(os.system('pidof i3lock') == 256):
+        #    global time_t
+        #    time_t = time()
+
+        if (len(var)> (LIMIT)):
+            subprocess.call(LOCK)	
             global time_t 
             time_t = time()
-            subprocess.call('i3lock')	
 
         return (0, response)
+
 
