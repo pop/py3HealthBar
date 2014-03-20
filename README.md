@@ -6,9 +6,9 @@ Py3HealthBar is a Py3Status module for reminding you stay active while inside of
 Installation
 ===========
 
-To use Py3HealthBar you must install the python3 version of py3status through pip3. normal pip will not work.
+To use Py3HealthBar you must install the python3 version of py3status through pip.
 
-	$ sudo pip3 install py3status
+	$ sudo pip install py3status
 
 After you have done that clone this repo	
 
